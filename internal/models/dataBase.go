@@ -35,6 +35,8 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	db.Debug().AutoMigrate(&App{}, &Build{})
 }
 
 func GetDB() *gorm.DB {
