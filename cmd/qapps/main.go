@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/AlexanderAsmakov/qapps/internal/controllers"
+	"github.com/AlexanderAsmakov/qapps/internal/handlers"
 	"net/http"
 	"os"
 )
@@ -17,7 +17,8 @@ func main() {
 	fs := http.FileServer(http.Dir("assets"))
 
 	mux.Handle("/assets/", http.StripPrefix("/assets/", fs))
-	mux.HandleFunc("/", controllers.Index)
+	mux.HandleFunc("/", handlers.Index)
+	mux.HandleFunc("/apps", handlers.GetAllApps)
 
 	http.ListenAndServe(":"+port, mux)
 }

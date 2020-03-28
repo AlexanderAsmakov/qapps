@@ -18,3 +18,12 @@ const (
 	OperationSystemIos     operationSystem = "ios"
 	OperationSystemAndroid operationSystem = "android"
 )
+
+// Возможно это нужно будет перенести во что-то вроде repository
+func GetAllApps() []App {
+	db := GetDB()
+	apps := []App{}
+	db.Select(&apps, "SELECT * FROM apps WHERE os = 'ios'")
+
+	return apps
+}
