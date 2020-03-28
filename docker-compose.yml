@@ -3,8 +3,7 @@ version: '3'
 services:
   web:
     build: .
-    image: app
-    command: go run cmd/qapps/main.go -apikey=3059dd14799542e9a7b6ec5bf97dc62c
+    command: go run cmd/qapps/main.go
     volumes:
       - .:/go/src/github.com/AlexanderAsmakov/qapps
     ports:
@@ -13,6 +12,8 @@ services:
       - db
   db:
     image: postgres
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_PASSWORD: password
   adminer:
