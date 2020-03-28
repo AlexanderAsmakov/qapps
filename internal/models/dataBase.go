@@ -2,14 +2,15 @@ package models
 
 import (
 	"fmt"
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"github.com/jmoiron/sqlx"
 	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
+	"io/ioutil"
 	"log"
 	"os"
 )
 
-var db *gorm.DB
+var db *sqlx.DB
 
 func init() {
 	var err error
@@ -30,15 +31,47 @@ func init() {
 		"host=%s user=%s dbname=%s sslmode=%s password=%s",
 		dbHost, username, dbName, sslMode, password)
 
-	db, err = gorm.Open("postgres", dbUri)
+	db, err = sqlx.Connect("postgres", dbUri)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	db.Debug().AutoMigrate(&App{}, &Build{})
+	initQuery, err := ioutil.ReadFile("db/001-init-schema.sql")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	dumpAppQuery, err := ioutil.ReadFile("db/002-apps-dump-data.sql")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	dumpBuildsQuery, err := ioutil.ReadFile("db/003-builds-dump-data.sql")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	dumpAppsMetadataQuery, err := ioutil.ReadFile("db/004-apps-metadata-dump-data.sql")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Initial data base structure
+	db.MustExec(string(initQuery))
+
+	// Dump test data
+	tx := db.MustBegin()
+	tx.MustExec(string(dumpAppQuery))
+	tx.MustExec(string(dumpBuildsQuery))
+	tx.MustExec(string(dumpAppsMetadataQuery))
+	tx.Commit()
 }
 
-func GetDB() *gorm.DB {
+func GetDB() *sqlx.DB {
 	return db
 }
