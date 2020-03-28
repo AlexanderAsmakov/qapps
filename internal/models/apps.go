@@ -1,11 +1,20 @@
 package models
 
-import "github.com/jinzhu/gorm"
-
 type App struct {
-	gorm.Model
-	Name             string `gorm:"type:varchar(255);not null"`
-	Title            string `gorm:"type:varchar(255);not null"`
-	BundleIdentifier string `gorm:"type:varchar(255);not null"`
-	OS               string `gorm:"type:varchar(32);not null;default:'ios'"`
+	ID               int64           `json:"id" db:"id"`
+	Name             string          `json:"name" db:"name"`
+	Title            string          `json:"title" db:"title"`
+	BundleIdentifier string          `json:"bundleIdentifier" db:"bundle_identifier"`
+	OS               operationSystem `json:"os" db:"os"`
 }
+
+type operationSystem string
+
+func (os operationSystem) String() string {
+	return string(os)
+}
+
+const (
+	OperationSystemIos     operationSystem = "ios"
+	OperationSystemAndroid operationSystem = "android"
+)
